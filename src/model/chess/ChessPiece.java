@@ -3,16 +3,19 @@ package model.chess;
 import java.util.List;
 
 import model.boardgame.Piece;
+import model.chess.move.MoveCalculus;
 import model.chess.util.ChessPieceType;
 
 public abstract class ChessPiece extends Piece {
 	
 	private ChessColor color;
 	private ChessPieceType type;
+	protected MoveCalculus calculus;
 
-	public ChessPiece(ChessColor color, ChessPieceType type) {
+	public ChessPiece(ChessColor color, ChessPieceType type, MoveCalculus calculus) {
 		this.color = color;
 		this.type = type;
+		this.calculus = calculus;
 	}
 	
 	public ChessColor getColor() {
@@ -33,7 +36,7 @@ public abstract class ChessPiece extends Piece {
 	
 	protected abstract boolean[][] legalMoves();
 
-	protected abstract List<ChessPiece> targets();
+	public abstract List<ChessPiece> targets();
 
 	public boolean isLegalMove(int row, int column) {
 		return legalMoves()[row][column];
