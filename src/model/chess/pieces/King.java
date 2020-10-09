@@ -27,11 +27,11 @@ public class King extends ChessPiece {
 		Position next = new Position(position.getRow() - 1, position.getColumn() - 1);
 		if (board.isPosition(next)) {
 			if (!board.isOccupied(next)) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			} else if (((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			}
@@ -40,11 +40,11 @@ public class King extends ChessPiece {
 		next.setColumn(position.getColumn());
 		if (board.isPosition(next)) {
 			if (!board.isOccupied(next)) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			} else if (((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			}
@@ -53,11 +53,11 @@ public class King extends ChessPiece {
 		next.setColumn(position.getColumn() + 1);
 		if (board.isPosition(next)) {
 			if (!board.isOccupied(next)) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			} else if (((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			}
@@ -66,11 +66,11 @@ public class King extends ChessPiece {
 		next = new Position(position.getRow(), position.getColumn() - 1);
 		if (board.isPosition(next)) {
 			if (!board.isOccupied(next)) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			} else if (((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			}
@@ -79,11 +79,11 @@ public class King extends ChessPiece {
 		next.setColumn(position.getColumn() + 1);
 		if (board.isPosition(next)) {
 			if (!board.isOccupied(next)) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			} else if (((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			}
@@ -92,11 +92,11 @@ public class King extends ChessPiece {
 		next = new Position(position.getRow() + 1, position.getColumn() - 1);
 		if (board.isPosition(next)) {
 			if (!board.isOccupied(next)) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			} else if (((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			}
@@ -105,11 +105,11 @@ public class King extends ChessPiece {
 		next.setColumn(position.getColumn());
 		if (board.isPosition(next)) {
 			if (!board.isOccupied(next)) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			} else if (((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			}
@@ -118,11 +118,11 @@ public class King extends ChessPiece {
 		next.setColumn(position.getColumn() + 1);
 		if (board.isPosition(next)) {
 			if (!board.isOccupied(next)) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			} else if (((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
-				if (!calculus.willCheck(board, position, next)) {
+				if (!calculus.willCheck(position, next)) {
 					moves[next.getRow()][next.getColumn()] = true;
 				}
 			}
@@ -132,14 +132,14 @@ public class King extends ChessPiece {
 
 		// kingside castle
 		
-		if (!calculus.isChecked(board, getColor())) {
+		if (!calculus.isChecked(getColor())) {
 			if (game.canCastle(0 + i)) {
 				Position passing = new Position(position.getRow(), position.getColumn() + 1);
 				Position castleTarget = new Position(position.getRow(), position.getColumn() + 2);
 
 				if (!board.isOccupied(passing) && !board.isOccupied(castleTarget)) {
-					if (!calculus.willCheck(board, position, passing)
-							&& !calculus.willCheck(board, position, castleTarget)) {
+					if (!calculus.willCheck(position, passing)
+							&& !calculus.willCheck(position, castleTarget)) {
 						moves[castleTarget.getRow()][castleTarget.getColumn()] = true;
 					}
 				}
@@ -148,15 +148,15 @@ public class King extends ChessPiece {
 		
 		// queenside castle
 		
-		if (!calculus.isChecked(board, getColor())) {
+		if (!calculus.isChecked(getColor())) {
 			if (game.canCastle(1 + i)) {
 				Position passing = new Position(position.getRow(), position.getColumn() - 1);
 				Position passingRook = new Position(position.getRow(), position.getColumn() - 3);
 				Position castleTarget = new Position(position.getRow(), position.getColumn() - 2);
 
 				if (!board.isOccupied(passing) && !board.isOccupied(passingRook) && !board.isOccupied(castleTarget)) {
-					if (!calculus.willCheck(board, position, passing)
-							&& !calculus.willCheck(board, position, castleTarget)) {
+					if (!calculus.willCheck(position, passing)
+							&& !calculus.willCheck(position, castleTarget)) {
 						moves[castleTarget.getRow()][castleTarget.getColumn()] = true;
 					}
 				}

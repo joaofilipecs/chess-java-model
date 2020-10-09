@@ -1,7 +1,7 @@
 package model.chess.move;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import model.boardgame.Board;
@@ -14,29 +14,44 @@ import model.chess.pieces.King;
 
 public class MoveCalculus {
 	
-	private List<ChessPiece> pieces = new ArrayList<>();
+	public Set<ChessPiece> pieces;
+	private Board board;
 	
-	public MoveCalculus(List<ChessPiece> pieces) {
+	public MoveCalculus(Set<ChessPiece> pieces, Board board) {
 		this.pieces = pieces;
+		this.board = board;
 	}
 
-	public boolean willCheck(Board board, Position source, Position target) {
-
+	public boolean willCheck(Position source, Position target) {
+		
 		Piece moved = board.removePiece(source);
-		Piece captured = board.removePiece(target);
+		Piece captured = removePiece(target);
 		
 		board.putPiece(moved, target);
-
-		boolean check = isChecked(board, ((ChessPiece) moved).getColor());
+		
+		boolean check = isChecked(((ChessPiece) moved).getColor());
 		
 		board.putPiece(board.removePiece(target), source);
 		
-		if (captured != null)board.putPiece(captured, target);
+		reputPiece(captured, target);
 
 		return check;
 	}
 
-	public boolean isChecked(Board board, ChessColor color) {
+	private void reputPiece(Piece captured, Position target) {
+		if (captured != null) {
+			board.putPiece(captured, new Position(target.getRow(), target.getColumn()));
+			pieces.add((ChessPiece)captured);
+		}
+	}
+
+	private Piece removePiece(Position target) {
+		Piece captured = board.removePiece(target);
+		if (captured != null)pieces.remove(captured);
+		return captured;
+	}
+
+	public boolean isChecked(ChessColor color) {
 		
 		List<ChessPiece> list = pieces.stream().filter(x -> x.getOppositeColor() == color).collect(Collectors.toList());
 		

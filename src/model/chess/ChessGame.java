@@ -1,7 +1,7 @@
 package model.chess;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import model.boardgame.Board;
 import model.boardgame.Piece;
@@ -10,24 +10,25 @@ import model.chess.move.MoveCalculus;
 import model.chess.move.MoveException;
 import model.chess.move.MoveType;
 import model.chess.pieces.King;
+import model.chess.pieces.Rook;
 import model.chess.util.ChessPieceType;
 
 public class ChessGame {
-	
+
 	private Board board;
-	
+
 	private ChessColor turn;
 	private boolean[] castle;
 	private Position enPassant;
 	private int halfMoves;
 	private int fullMoves;
-	
-	private List<ChessPiece> piecesOnBoard = new ArrayList<>();
-	private List<ChessPiece> capturedPieces = new ArrayList<>();
+
+	private Set<ChessPiece> piecesOnBoard = new HashSet<>();
+	private Set<ChessPiece> capturedPieces = new HashSet<>();
 	private ChessPieceType promotionSelection;
-	
+
 	private MoveCalculus calculus;
-	
+
 	public ChessGame() {
 		board = new Board(8, 8);
 		turn = ChessColor.WHITE;
@@ -35,46 +36,46 @@ public class ChessGame {
 		halfMoves = 0;
 		fullMoves = 1;
 		promotionSelection = ChessPieceType.QUEEN;
-		calculus = new MoveCalculus(piecesOnBoard);
+		calculus = new MoveCalculus(piecesOnBoard, board);
 		initialPosition();
 	}
-	
+
 	public Board getBoard() {
 		return board;
 	}
-	
+
 	public ChessColor getTurn() {
 		return turn;
 	}
-	
+
 	public boolean canCastle(int side) {
 		return castle[side];
 	}
-	
+
 	public void setCastle(int side, boolean value) {
 		castle[side] = value;
 	}
-	
+
 	public Position getEnPassant() {
 		return enPassant;
 	}
-	
+
 	public int getHalfMoves() {
 		return halfMoves;
 	}
-	
+
 	public int getFullMoves() {
 		return fullMoves;
 	}
 
-	public List<ChessPiece> getPiecesOnBoard() {
+	public Set<ChessPiece> getPiecesOnBoard() {
 		return piecesOnBoard;
 	}
 
-	public List<ChessPiece> getCapturedPieces() {
+	public Set<ChessPiece> getCapturedPieces() {
 		return capturedPieces;
 	}
-	
+
 	public ChessPieceType getPromotionSelection() {
 		return promotionSelection;
 	}
@@ -82,65 +83,124 @@ public class ChessGame {
 	public void setPromotionSelection(ChessPieceType promotionSelection) {
 		this.promotionSelection = promotionSelection;
 	}
-	
+
 	public void putChessPiece(ChessPiece piece, Square square) {
 		board.putPiece(piece, square.toPosition());
 		piecesOnBoard.add(piece);
 	}
-	
+
 	public ChessPiece removePiece(Position position) {
-		ChessPiece removed = (ChessPiece)board.getPiece(position);
+		ChessPiece removed = (ChessPiece) board.removePiece(position);
 		if (removed != null) {
-			board.removePiece(position);
 			piecesOnBoard.remove(removed);
 			capturedPieces.add(removed);
 		}
 		return removed;
 	}
-	
+
 	public void initialPosition() {
 		cleanPosition();
 		putChessPiece(new King(ChessColor.WHITE, calculus, this), new Square('e', 1));
-		putChessPiece(new King(ChessColor.BLACK, calculus, this), new Square('e', 3));
+		putChessPiece(new Rook(ChessColor.WHITE, calculus, 0), new Square('h', 1));
+		putChessPiece(new Rook(ChessColor.WHITE, calculus, 1), new Square('a', 1));
+
+		putChessPiece(new King(ChessColor.BLACK, calculus, this), new Square('e', 8));
+		putChessPiece(new Rook(ChessColor.BLACK, calculus, 2), new Square('h', 8));
+		putChessPiece(new Rook(ChessColor.BLACK, calculus, 3), new Square('a', 8));
+
+		initialCastle();
 	}
-	
+
+	private void initialCastle() {
+		if (board.getPiece(7, 7) != null && board.getPiece(7, 7) instanceof Rook
+				&& ((Rook) board.getPiece(7, 7)).getSide() == 0 && !((Rook) board.getPiece(7, 7)).hasMoved()) {
+			castle[0] = true;
+		}
+		if (board.getPiece(7, 0) != null && board.getPiece(7, 0) instanceof Rook
+				&& ((Rook) board.getPiece(7, 0)).getSide() == 1 && !((Rook) board.getPiece(7, 0)).hasMoved()) {
+			castle[1] = true;
+		}
+		if (board.getPiece(0, 7) != null && board.getPiece(0, 7) instanceof Rook
+				&& ((Rook) board.getPiece(0, 7)).getSide() == 2 && !((Rook) board.getPiece(0, 7)).hasMoved()) {
+			castle[2] = true;
+		}
+		if (board.getPiece(0, 0) != null && board.getPiece(0, 0) instanceof Rook
+				&& ((Rook) board.getPiece(0, 0)).getSide() == 3 && !((Rook) board.getPiece(0, 0)).hasMoved()) {
+			castle[3] = true;
+		}
+	}
+
 	public void cleanPosition() {
-		
+
 	}
-	
+
 	public MoveType makeMove(Position source, Position target) {
 		if (board.getPiece(source) == null) {
 			throw new MoveException("There is no source piece");
 		}
-		
+
 		MoveType type = MoveType.DEFAULT;
-		ChessPiece moved = (ChessPiece)board.getPiece(source);
+		ChessPiece moved = (ChessPiece) board.getPiece(source);
 		
 		if (moved.isLegalMove(target.getRow(), target.getColumn())) {
 			if (getMoveType(source, target) == MoveType.DEFAULT) {
 				board.removePiece(source);
 				removePiece(target);
 				board.putPiece(moved, target);
+
+			} else if (getMoveType(source, target) == MoveType.KINGSIDE_CASTLE) {
+				board.putPiece(board.removePiece(source), target);
+				Piece rook = board.removePiece(new Position(source.getRow(), 7));
+				board.putPiece(rook, new Position(source.getRow(), 5));
+				type = MoveType.KINGSIDE_CASTLE;
+				
+			} else if (getMoveType(source, target) == MoveType.QUEENSIDE_CASTLE) {
+				board.putPiece(board.removePiece(source), target);
+				Piece rook = board.removePiece(new Position(source.getRow(), 0));
+				board.putPiece(rook, new Position(source.getRow(), 3));
+				type = MoveType.QUEENSIDE_CASTLE;
+			}
+			
+			if (moved instanceof Rook)
+				((Rook) moved).setMoved(true);
+			if (moved instanceof King) {
+				int castleDiff = ((moved.getColor() == ChessColor.WHITE) ? 0 : 2);
+
+				castle[castleDiff + 0] = false;
+				castle[castleDiff + 1] = false;
 			}
 		} else {
 			throw new MoveException("That's not a legal move");
 		}
+		
 		return type;
 	}
-	
+
 	public MoveType getMoveType(Position source, Position target) {
-		return MoveType.DEFAULT;
+		ChessPiece moving = (ChessPiece) board.getPiece(source);
+		MoveType type = MoveType.DEFAULT;
+		
+		if (moving instanceof King) {
+			if (Math.abs(source.getColumn() - target.getColumn()) == 2) {
+				if (target.getColumn() == 6) {
+					type = MoveType.KINGSIDE_CASTLE;
+				} else if (target.getColumn() == 2) {
+					type = MoveType.QUEENSIDE_CASTLE;
+				}
+			}
+		}
+
+		return type;
 	}
-	
 
 	public void printBoardDiagram() {
 		System.out.println(getBoardDiagram());
 	}
-	
+
 	public void printLegalMovesDiagram(Position position) {
 		System.out.println(getLegalMovesDiagram(position));
 	}
-	
+
 	private String getBoardDiagram() {
 		String diagram = "";
 
@@ -172,7 +232,7 @@ public class ChessGame {
 
 					boolean arg = ((ChessPiece) board.getPiece(i, j)) == piece;
 
-					String pieceStr = (arg) ? piece.toString() : ((piece.isLegalMove(i, j)) ? "X" : " ");
+					String pieceStr = (arg) ? piece.toString() : ((piece.isLegalMove(i, j)) ? "*" : " ");
 					diagram += "| " + pieceStr + " ";
 				}
 				diagram += "| ";
