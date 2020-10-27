@@ -8,55 +8,33 @@ public class Demo {
 	public static void main(String[] args) {
 		ChessGame game = new ChessGame();
 		
-		System.out.println("GAME #1");
+		System.out.println("Game #1: two square move");
 		game.printBoardDiagram();
-		game.printLegalMovesDiagram(new Position(0, 4));
-		System.out.println("King can castle both sides");
-		game.makeMove(new Position(0, 4), new Position(0, 6));
+		game.printLegalMovesDiagram(new Position(6, 4));
+		game.makeMove(new Position(6, 4), new Position(4, 4), false);
 		game.printBoardDiagram();
-		game.makeMove(new Position(7, 0), new Position(0, 0));
+		game.makeMove(new Position(1, 3), new Position(3, 3), false);
 		game.printBoardDiagram();
-		game.printLegalMovesDiagram(new Position(0, 5));
-		System.out.println("The rook is pinned to the king");
+		game.printLegalMovesDiagram(new Position(4, 4));
+		game.printLegalMovesDiagram(new Position(6, 0));
 		
 		ChessGame game2 = new ChessGame();
+		System.out.println("Game #2: en Passant");
 		
-		System.out.println("GAME #2");
 		game2.printBoardDiagram();
-		game2.makeMove(new Position(7, 0), new Position(6, 0));
+		game2.printLegalMovesDiagram(new Position(1, 6));
+		game2.makeMove(new Position(7, 0), new Position(7, 1), false);
+		game2.makeMove(new Position(1, 6), new Position(3, 6), false);
 		game2.printBoardDiagram();
-		game2.makeMove(new Position(0, 0), new Position(1, 0));
+		game2.printLegalMovesDiagram(new Position(3, 7));
+		game2.makeMove(new Position(3, 7), new Position(2, 6), false);
 		game2.printBoardDiagram();
-		game2.makeMove(new Position(6, 0), new Position(6, 4));
-		game2.printBoardDiagram();
-		game2.printLegalMovesDiagram(new Position(1, 0));
-		System.out.println("Black pieces are in check: only rook move is to cover the king from the check");
-		game2.makeMove(new Position(1, 0), new Position(1, 4));
-		game2.printBoardDiagram();
-		game2.printLegalMovesDiagram(new Position(1, 4));
-		System.out.println("The rook is pinned to the king");
 		
 		ChessGame game3 = new ChessGame();
 		
-		System.out.println("GAME #3");
+		System.out.println("Game #3: promotion");
 		game3.printBoardDiagram();
-		game3.makeMove(new Position(7, 0), new Position(0, 0));
-		game3.printBoardDiagram();
-		game3.printLegalMovesDiagram(new Position(0, 4));
-		game3.printLegalMovesDiagram(new Position(0, 7));
-		System.out.println("King is in check. Second rook can not move");
-		game3.makeMove(new Position(0, 4), new Position(1, 5));
-		game3.makeMove(new Position(0, 0), new Position(0, 7));
-		game3.printBoardDiagram();
-		game3.makeMove(new Position(1, 5), new Position(1, 6));
-		game3.printBoardDiagram();
-		game3.printLegalMovesDiagram(new Position(1, 6));
-		System.out.println("King can not move to any of white rook legal moves");
-		game3.makeMove(new Position(7, 7), new Position(7, 6));
-		game3.printBoardDiagram();
-		game3.printLegalMovesDiagram(new Position(1, 6));
-		System.out.println("King is in check, but can capture undefended rook");
-		game3.makeMove(new Position(1, 6), new Position(0, 7));
+		game3.makeMove(new Position(1, 1), new Position(0, 1), false);
 		game3.printBoardDiagram();
 		
 	}
