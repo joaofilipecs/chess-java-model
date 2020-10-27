@@ -9,53 +9,24 @@ import model.chess.ChessPiece;
 import model.chess.move.MoveCalculus;
 import model.chess.util.ChessPieceType;
 
-public class Rook extends ChessPiece {
+public class Bishop extends ChessPiece {
 
-	private Integer side;
-	private boolean moved;
-
-	public Rook(ChessColor color, MoveCalculus calculus, Integer side) {
-		super(color, ChessPieceType.ROOK, calculus);
-		this.side = side;
-	}
-
-	public Integer getSide() {
-		return side;
-	}
-
-	public boolean hasMoved() {
-		return moved;
-	}
-
-	public void setMoved(boolean moved) {
-		this.moved = moved;
+	public Bishop(ChessColor color, MoveCalculus calculus) {
+		super(color, ChessPieceType.BISHOP, calculus);
 	}
 
 	@Override
 	protected boolean[][] legalMoves() {
 		boolean[][] moves = new boolean[8][8];
 
-		// up
+		// up-left
 
-		Position next = new Position(position.getRow() - 1, position.getColumn());
+		Position next = new Position(position.getRow() - 1, position.getColumn() - 1);
 		while (board.isPosition(next) && !board.isOccupied(next)) {
 			if (!calculus.willCheck(position, next)) {
 				moves[next.getRow()][next.getColumn()] = true;
 			}
 			next.setRow(next.getRow() - 1);
-		} if (board.isPosition(next) && ((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
-			if (!calculus.willCheck(position, next)) {
-				moves[next.getRow()][next.getColumn()] = true;
-			}
-		}
-
-		// left
-
-		next = new Position(position.getRow(), position.getColumn() - 1);
-		while (board.isPosition(next) && !board.isOccupied(next)) {
-			if (!calculus.willCheck(position, next)) {
-				moves[next.getRow()][next.getColumn()] = true;
-			}
 			next.setColumn(next.getColumn() - 1);
 		} if (board.isPosition(next) && ((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
 			if (!calculus.willCheck(position, next)) {
@@ -63,13 +34,14 @@ public class Rook extends ChessPiece {
 			}
 		}
 
-		// right
+		// up-right
 
-		next = new Position(position.getRow(), position.getColumn() + 1);
+		next = new Position(position.getRow() - 1, position.getColumn() + 1);
 		while (board.isPosition(next) && !board.isOccupied(next)) {
 			if (!calculus.willCheck(position, next)) {
 				moves[next.getRow()][next.getColumn()] = true;
 			}
+			next.setRow(next.getRow() - 1);
 			next.setColumn(next.getColumn() + 1);
 		} if (board.isPosition(next) && ((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
 			if (!calculus.willCheck(position, next)) {
@@ -77,14 +49,30 @@ public class Rook extends ChessPiece {
 			}
 		}
 
-		// down
+		// down-left
 
-		next = new Position(position.getRow() + 1, position.getColumn());
+		next = new Position(position.getRow() + 1, position.getColumn() - 1);
 		while (board.isPosition(next) && !board.isOccupied(next)) {
 			if (!calculus.willCheck(position, next)) {
 				moves[next.getRow()][next.getColumn()] = true;
 			}
 			next.setRow(next.getRow() + 1);
+			next.setColumn(next.getColumn() - 1);
+		} if (board.isPosition(next) && ((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
+			if (!calculus.willCheck(position, next)) {
+				moves[next.getRow()][next.getColumn()] = true;
+			}
+		}
+
+		// down-right
+
+		next = new Position(position.getRow() + 1, position.getColumn() + 1);
+		while (board.isPosition(next) && !board.isOccupied(next)) {
+			if (!calculus.willCheck(position, next)) {
+				moves[next.getRow()][next.getColumn()] = true;
+			}
+			next.setRow(next.getRow() + 1);
+			next.setColumn(next.getColumn() + 1);
 		} if (board.isPosition(next) && ((ChessPiece) board.getPiece(next)).getColor() != getColor()) {
 			if (!calculus.willCheck(position, next)) {
 				moves[next.getRow()][next.getColumn()] = true;
@@ -96,58 +84,58 @@ public class Rook extends ChessPiece {
 
 	@Override
 	public List<ChessPiece> targets() {
-
 		List<ChessPiece> targets = new ArrayList<>();
 
-		// up
 		ChessPiece target = null;
-		Position next = new Position(position.getRow() - 1, position.getColumn());
+		Position next = new Position(position.getRow() - 1, position.getColumn() - 1);
 		while (target == null && board.isPosition(next)) {
-
-			if (board.isOccupied(next)) {
+			
+			if (board.isPosition(next) && board.isOccupied(next) && target == null) {
 				target = (ChessPiece) board.getPiece(next);
 				targets.add(target);
 			}
-
+			
 			next.setRow(next.getRow() - 1);
-		}
-
-		// left
-		target = null;
-		next = new Position(position.getRow(), position.getColumn() - 1);
-		while (target == null && board.isPosition(next)) {
-
-			if (board.isOccupied(next)) {
-				target = (ChessPiece) board.getPiece(next);
-				targets.add(target);
-			}
-
 			next.setColumn(next.getColumn() - 1);
 		}
 
-		// right
 		target = null;
-		next = new Position(position.getRow(), position.getColumn() + 1);
+		next = new Position(position.getRow() - 1, position.getColumn() + 1);
 		while (target == null && board.isPosition(next)) {
 
-			if (board.isOccupied(next)) {
+			
+			if (board.isPosition(next) && board.isOccupied(next) && target == null) {
 				target = (ChessPiece) board.getPiece(next);
 				targets.add(target);
 			}
+			
+			next.setRow(next.getRow() - 1);
 			next.setColumn(next.getColumn() + 1);
-
 		}
 
-		// down
 		target = null;
-		next = new Position(position.getRow() + 1, position.getColumn());
+		next = new Position(position.getRow() + 1, position.getColumn() - 1);
+		while (target == null && board.isPosition(next)) {
+		
+			if (board.isPosition(next) && board.isOccupied(next) && target == null) {
+				target = (ChessPiece) board.getPiece(next);
+				targets.add(target);
+			}
+			
+			next.setRow(next.getRow() + 1);
+			next.setColumn(next.getColumn() - 1);
+		}
+
+		target = null;
+		next = new Position(position.getRow() + 1, position.getColumn() + 1);
 		while (target == null && board.isPosition(next)) {
 
-			if (board.isOccupied(next)) {
+			if (board.isPosition(next) && board.isOccupied(next) && target == null) {
 				target = (ChessPiece) board.getPiece(next);
 				targets.add(target);
 			}
 			next.setRow(next.getRow() + 1);
+			next.setColumn(next.getColumn() + 1);
 		}
 
 		return targets;
@@ -155,7 +143,7 @@ public class Rook extends ChessPiece {
 
 	@Override
 	public String toString() {
-		return (getColor() == ChessColor.WHITE) ? "R" : "r";
+		return (getColor() == ChessColor.WHITE) ? "B" : "b";
 	}
 
 }

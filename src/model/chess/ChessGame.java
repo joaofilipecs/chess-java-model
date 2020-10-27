@@ -9,8 +9,11 @@ import model.boardgame.Position;
 import model.chess.move.MoveCalculus;
 import model.chess.move.MoveException;
 import model.chess.move.MoveType;
+import model.chess.pieces.Bishop;
 import model.chess.pieces.King;
+import model.chess.pieces.Knight;
 import model.chess.pieces.Pawn;
+import model.chess.pieces.Queen;
 import model.chess.pieces.Rook;
 import model.chess.util.ChessPieceType;
 
@@ -36,7 +39,7 @@ public class ChessGame {
 		castle = new boolean[4];
 		halfMoves = 0;
 		fullMoves = 1;
-		promotionSelection = ChessPieceType.ROOK;
+		promotionSelection = ChessPieceType.QUEEN;
 		calculus = new MoveCalculus(piecesOnBoard, board);
 		initialPosition();
 	}
@@ -105,26 +108,35 @@ public class ChessGame {
 		putChessPiece(new Rook(ChessColor.WHITE, calculus, 0), new Square('h', 1));
 		putChessPiece(new Rook(ChessColor.WHITE, calculus, 1), new Square('a', 1));
 		putChessPiece(new Pawn(ChessColor.WHITE, calculus, this), new Square('a', 2));
-		putChessPiece(new Pawn(ChessColor.WHITE, calculus, this), new Square('b', 7));
+		putChessPiece(new Pawn(ChessColor.WHITE, calculus, this), new Square('b', 2));
 		putChessPiece(new Pawn(ChessColor.WHITE, calculus, this), new Square('c', 2));
 		putChessPiece(new Pawn(ChessColor.WHITE, calculus, this), new Square('d', 2));
 		putChessPiece(new Pawn(ChessColor.WHITE, calculus, this), new Square('e', 2));
 		putChessPiece(new Pawn(ChessColor.WHITE, calculus, this), new Square('f', 2));
 		putChessPiece(new Pawn(ChessColor.WHITE, calculus, this), new Square('g', 2));
-		putChessPiece(new Pawn(ChessColor.WHITE, calculus, this), new Square('h', 5));
-		
+		putChessPiece(new Pawn(ChessColor.WHITE, calculus, this), new Square('h', 2));
+		putChessPiece(new Knight(ChessColor.WHITE, calculus), new Square('b', 1));
+		putChessPiece(new Knight(ChessColor.WHITE, calculus), new Square('g', 1));
+		putChessPiece(new Bishop(ChessColor.WHITE, calculus), new Square('c', 1));
+		putChessPiece(new Bishop(ChessColor.WHITE, calculus), new Square('f', 1));
+		putChessPiece(new Queen(ChessColor.WHITE, calculus), new Square('d', 1));
 
 		putChessPiece(new King(ChessColor.BLACK, calculus, this), new Square('e', 8));
 		putChessPiece(new Rook(ChessColor.BLACK, calculus, 2), new Square('h', 8));
 		putChessPiece(new Rook(ChessColor.BLACK, calculus, 3), new Square('a', 8));
 		putChessPiece(new Pawn(ChessColor.BLACK, calculus, this), new Square('a', 7));
-//		putChessPiece(new Pawn(ChessColor.BLACK, calculus, this), new Square('b', 7));
+		putChessPiece(new Pawn(ChessColor.BLACK, calculus, this), new Square('b', 7));
 		putChessPiece(new Pawn(ChessColor.BLACK, calculus, this), new Square('c', 7));
 		putChessPiece(new Pawn(ChessColor.BLACK, calculus, this), new Square('d', 7));
 		putChessPiece(new Pawn(ChessColor.BLACK, calculus, this), new Square('e', 7));
 		putChessPiece(new Pawn(ChessColor.BLACK, calculus, this), new Square('f', 7));
 		putChessPiece(new Pawn(ChessColor.BLACK, calculus, this), new Square('g', 7));
 		putChessPiece(new Pawn(ChessColor.BLACK, calculus, this), new Square('h', 7));
+		putChessPiece(new Knight(ChessColor.BLACK, calculus), new Square('b', 8));
+		putChessPiece(new Knight(ChessColor.BLACK, calculus), new Square('g', 8));
+		putChessPiece(new Bishop(ChessColor.BLACK, calculus), new Square('c', 8));
+		putChessPiece(new Bishop(ChessColor.BLACK, calculus), new Square('f', 8));
+		putChessPiece(new Queen(ChessColor.BLACK, calculus), new Square('d', 8));
 
 		initialCastle();
 	}
@@ -160,12 +172,12 @@ public class ChessGame {
 		MoveType type = MoveType.DEFAULT;
 		ChessPiece moved = (ChessPiece) board.getPiece(source);
 		ChessPiece captured = (ChessPiece) board.getPiece(target);
-		
+
 		if (moved.isLegalMove(target.getRow(), target.getColumn())) {
 			if (moved.getColor() == turn || test) {
-				
+
 				// move settings
-				
+
 				if (getMoveType(source, target) == MoveType.DEFAULT) {
 					board.removePiece(source);
 					removePiece(target);
@@ -187,18 +199,26 @@ public class ChessGame {
 					removePiece(calculus.getCapturedEnPassantPosition(moved, target));
 					board.putPiece(moved, target);
 				} else if (getMoveType(source, target) == MoveType.PROMOTION) {
-					if (promotionSelection == ChessPieceType.ROOK) {
-						board.removePiece(source);
-						removePiece(target);
-						board.putPiece(moved, target);
-						
-						removePiece(target);
+
+					board.removePiece(source);
+					removePiece(target);
+					board.putPiece(moved, target);
+
+					removePiece(target);
+					choosePromotion();
+					if (promotionSelection == ChessPieceType.QUEEN) {
+						board.putPiece(new Queen(moved.getColor(), calculus), target);
+					} else if (promotionSelection == ChessPieceType.ROOK) {
 						board.putPiece(new Rook(moved.getColor(), calculus, null), target);
+					} else if (promotionSelection == ChessPieceType.BISHOP) {
+						board.putPiece(new Bishop(moved.getColor(), calculus), target);
+					} else if (promotionSelection == ChessPieceType.KNIGHT) {
+						board.putPiece(new Knight(moved.getColor(), calculus), target);
 					}
 				}
-				
+
 				// castle settings
-				
+
 				if (moved instanceof Rook)
 					((Rook) moved).setMoved(true);
 				if (moved instanceof King) {
@@ -207,16 +227,17 @@ public class ChessGame {
 					castle[castleDiff + 0] = false;
 					castle[castleDiff + 1] = false;
 				}
-				
+
 				// en passant settings
-				
+
 				enPassant = null;
 				if (moved instanceof Pawn && Math.abs(source.getRow() - target.getRow()) == 2) {
-					enPassant = new Position(((moved.getColor() == ChessColor.WHITE) ? 5 : 2), moved.getPosition().getColumn());
+					enPassant = new Position(((moved.getColor() == ChessColor.WHITE) ? 5 : 2),
+							moved.getPosition().getColumn());
 				}
-				
+
 				// game settings
-				
+
 				if (!test) {
 					if (turn == ChessColor.BLACK) {
 						fullMoves++;
@@ -224,9 +245,9 @@ public class ChessGame {
 					} else {
 						turn = ChessColor.BLACK;
 					}
-					
+
 					if (captured != null || moved instanceof Pawn) {
-						halfMoves=0;
+						halfMoves = 0;
 					} else {
 						halfMoves++;
 					}
@@ -241,10 +262,13 @@ public class ChessGame {
 		return type;
 	}
 
+	private void choosePromotion() {
+	}
+
 	public MoveType getMoveType(Position source, Position target) {
 		ChessPiece moving = (ChessPiece) board.getPiece(source);
 		ChessPiece capture = (ChessPiece) board.getPiece(target);
-		
+
 		MoveType type = MoveType.DEFAULT;
 
 		if (moving instanceof King) {
@@ -256,14 +280,13 @@ public class ChessGame {
 				}
 			}
 		}
-		
+
 		if (moving instanceof Pawn) {
 			int end = (moving.getColor() == ChessColor.WHITE) ? 0 : 7;
-			
+
 			if (source.getColumn() != target.getColumn() && capture == null) {
 				type = MoveType.EN_PASSANT;
-			}
-			else if (target.getRow() == end) {
+			} else if (target.getRow() == end) {
 				type = MoveType.PROMOTION;
 			}
 		}
