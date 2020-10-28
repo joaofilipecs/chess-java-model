@@ -2,6 +2,7 @@ package model.chess;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import model.boardgame.Board;
 import model.boardgame.Piece;
@@ -52,6 +53,10 @@ public class ChessGame {
 		return turn;
 	}
 
+	public void setTurn(ChessColor turn) {
+		this.turn = turn;
+	}
+
 	public boolean canCastle(int side) {
 		return castle[side];
 	}
@@ -64,12 +69,24 @@ public class ChessGame {
 		return enPassant;
 	}
 
+	public void setEnPassant(Position enPassant) {
+		this.enPassant = enPassant;
+	}
+
 	public int getHalfMoves() {
 		return halfMoves;
 	}
 
+	public void setHalfMoves(int halfMoves) {
+		this.halfMoves = halfMoves;
+	}
+
 	public int getFullMoves() {
 		return fullMoves;
+	}
+	
+	public void setFullMoves(int fullMoves) {
+		this.fullMoves = fullMoves;
 	}
 
 	public Set<ChessPiece> getPiecesOnBoard() {
@@ -86,6 +103,10 @@ public class ChessGame {
 
 	public void setPromotionSelection(ChessPieceType promotionSelection) {
 		this.promotionSelection = promotionSelection;
+	}
+
+	public MoveCalculus getCalculus() {
+		return calculus;
 	}
 
 	public void putChessPiece(ChessPiece piece, Square square) {
@@ -161,6 +182,26 @@ public class ChessGame {
 	}
 
 	public void cleanPosition() {
+		for (int i =0; i<8;i++) {
+			for (int j =0; j<8;j++) {
+				board.removePiece(new Position(i, j));
+			}
+		}
+		
+		turn = ChessColor.WHITE;
+		
+		castle = new boolean[4];
+		
+		enPassant = null;
+		
+		halfMoves = 0;
+		
+		fullMoves = 1;
+		
+		piecesOnBoard.clear();
+		capturedPieces.clear();
+		
+		promotionSelection = ChessPieceType.QUEEN;
 
 	}
 
@@ -344,5 +385,21 @@ public class ChessGame {
 		} else {
 			throw new ChessException("There's no piece on given position");
 		}
+	}
+	
+	public boolean isCheckmated() {
+		Set<ChessPiece> list = piecesOnBoard.stream().filter(x -> x.getColor() == turn).collect(Collectors.toSet());
+		
+		for (ChessPiece p : list) {
+			for (int i = 0; i < 8; i++) {
+				for (int j = 0; j < 8; j++) {
+					if (p.isLegalMove(i, j)) {
+						return false;
+					}
+				}
+					
+			}
+		}
+		return true;
 	}
 }
