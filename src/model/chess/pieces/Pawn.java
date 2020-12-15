@@ -33,17 +33,17 @@ public class Pawn extends ChessPiece {
 			if (!calculus.willCheck(position, next)) {
 				moves[next.getRow()][next.getColumn()] = true;
 			}
-		}
-		
-		if (!board.isOccupied(next) && position.getRow() == start) {
-			next = new Position(position.getRow() + 2 * n, position.getColumn());
-			if (!board.isOccupied(next)) {
-				if (!calculus.willCheck(position, next)) {
-					moves[next.getRow()][next.getColumn()] = true;
+			if (position.getRow() == start) {
+				next = new Position(position.getRow() + 2 * n, position.getColumn());
+				if (!board.isOccupied(next)) {
+					if (!calculus.willCheck(position, next)) {
+						moves[next.getRow()][next.getColumn()] = true;
+					}
 				}
 			}
 		}
-
+		
+		
 		next = new Position(position.getRow() + 1 * n, position.getColumn() - 1);
 		if (board.isPosition(next) && board.isOccupied(next)
 				&& ((ChessPiece) board.getPiece(next)).getOppositeColor() == getColor()) {

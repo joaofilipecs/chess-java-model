@@ -91,7 +91,7 @@ public class FEN {
 		String castle = fields[2];
 
 		String enStr = fields[3];
-		Position enPassant = (enStr != "-")
+		Position enPassant = (!enStr.equals("-"))
 				? new Square(enStr.charAt(0), Integer.parseInt(enStr.substring(1))).toPosition()
 				: null;
 

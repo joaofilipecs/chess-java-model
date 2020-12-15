@@ -14,7 +14,7 @@ public class Demo {
 	public static void main(String[] args) {
 
 		Scanner sc = new Scanner(System.in);
-		FEN.loadFen(game, "r3k3/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/4K2R w KQkq e6 0 2");
+		FEN.loadFen(game, "8/4n3/4kN1P/8/1pp1N1P1/8/1PP2PK1/8 w - - 0 31");
 		
 		game.printBoardDiagram();
 		System.out.println(FEN.getFen(game));
